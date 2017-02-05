@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 //    char *argv = "localhost";
     int x, y;
     //int displayFrame = 0;
-    int filterType = 2; //0 = none, 1 = 3x3mean, 2 = 3x3 median, 3 = 5x5 median, 4 = 3x3median 2 pass
+    int filterType = 3; //0 = none, 1 = 3x3mean, 2 = 3x3 median, 3 = 5x5 median, 4 = 3x3median 2 pass
     int enSobelEdge = 1;
     int enBinarise = 1;
     int enCombine = 1;
@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
     //--------------OPENCV INIT---------------//
     uchar receiveBuffer[WIDTH*HEIGHT];
     uchar sendBuffer[WIDTH*HEIGHT];
-    Mat inputImage;
     int vecSize = WIDTH*HEIGHT;
     std::vector<uchar> h_frame_in(vecSize);
     std::vector<uchar> h_frame_out(vecSize);
