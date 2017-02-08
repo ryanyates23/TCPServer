@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
     //int displayFrame = 0;
     int filterType = 3; //0 = none, 1 = 3x3mean, 2 = 3x3 median, 3 = 5x5 median, 4 = 3x3median 2 pass
     int enSobelEdge = 1;
-    int enBinarise = 0;
-    int enCombine = 0;
+    int enBinarise = 1;
+    int enCombine = 1;
     int enCombineFiltering = 1;
     int width = WIDTH;
     int height = HEIGHT;
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
             medianKernel3.setArg(2, width);
             medianKernel3.setArg(3, height);
             
-            queue.enqueueNDRangeKernel(medianKernel3, cl::NullRange, cl::NDRange(width, height));
+            queue.enqueueNDRangeKernel(medianKernel3, cl::NullRange, cl::NDRange(width, height),cl::NullRange, NULL, NULL);
             
             //queue.enqueueReadBuffer(d_frame_out, CL_TRUE, 0, sizeof(uchar)*h_frame_out.size(), h_frame_out.data());
             queue.finish();
@@ -258,48 +258,16 @@ int main(int argc, char *argv[])
             medianKernel5.setArg(2, width);
             medianKernel5.setArg(3, height);
             
-            queue.enqueueNDRangeKernel(medianKernel5, cl::NullRange, cl::NDRange(width, height));
+            queue.enqueueNDRangeKernel(medianKernel5, cl::NullRange, cl::NDRange(width, height),cl::NullRange, NULL, NULL);
             queue.finish();
-            //h_frame_in = h_frame_out;
+            if(enCombine == 1 && enCombineFiltering == 1)
+            {
+                queue.enqueueCopyBuffer(d_frame_out, d_original_frame, 0, 0, vecSize);
+            }
         }
         else
         {
             //h_frame_out = h_frame_in;
-        }
-        if(filterType == 4)
-        {
-            medianKernel3.setArg(0, d_frame_in);
-            medianKernel3.setArg(1, d_frame_out);
-            medianKernel3.setArg(2, width);
-            medianKernel3.setArg(3, height);
-            
-            queue.enqueueNDRangeKernel(medianKernel3, cl::NullRange, cl::NDRange(width, height));
-            queue.finish();
-            
-            medianKernel3.setArg(0, d_frame_out);
-            medianKernel3.setArg(1, d_frame_in);
-            medianKernel3.setArg(2, width);
-            medianKernel3.setArg(3, height);
-            
-            queue.enqueueNDRangeKernel(medianKernel3, cl::NullRange, cl::NDRange(width, height));
-            queue.finish();
-            
-            queue.enqueueCopyBuffer(d_frame_out, d_frame_in, 0, 0, sizeof(uchar)*h_frame_out.size());
-            queue.finish();
-            
-            
-        }
-        if (enCombine == 1 && enCombineFiltering == 1)
-        {
-            medianKernel5.setArg(0, d_original_frame);
-            medianKernel5.setArg(1, d_original_frame);
-            medianKernel5.setArg(2, width);
-            medianKernel5.setArg(3, height);
-            
-            queue.enqueueNDRangeKernel(medianKernel5, cl::NullRange, cl::NDRange(width, height));
-            
-            queue.enqueueReadBuffer(d_frame_out, CL_TRUE, 0, sizeof(uchar)*h_frame_out.size(), h_frame_out.data());
-            queue.finish();
         }
         if (enSobelEdge == 1)
         {
@@ -309,7 +277,7 @@ int main(int argc, char *argv[])
             sobelKernel.setArg(2, width);
             sobelKernel.setArg(3, height);
             
-            queue.enqueueNDRangeKernel(sobelKernel, cl::NullRange, cl::NDRange(width, height));
+            queue.enqueueNDRangeKernel(sobelKernel, cl::NullRange, cl::NDRange(width, height),cl::NullRange, NULL, NULL);
             queue.finish();
         }
         else
@@ -341,7 +309,7 @@ int main(int argc, char *argv[])
             binKernel.setArg(3, height);
             binKernel.setArg(4, (uchar)thresh);
             
-            queue.enqueueNDRangeKernel(binKernel, cl::NullRange, cl::NDRange(width, height));
+            queue.enqueueNDRangeKernel(binKernel, cl::NullRange, cl::NDRange(width, height),cl::NullRange, NULL, NULL);
             queue.finish();
         }
         else
@@ -358,7 +326,7 @@ int main(int argc, char *argv[])
             combineKernel.setArg(3, width);
             combineKernel.setArg(4, height);
             
-            queue.enqueueNDRangeKernel(combineKernel, cl::NullRange, cl::NDRange(width, height));
+            queue.enqueueNDRangeKernel(combineKernel, cl::NullRange, cl::NDRange(width, height),cl::NullRange, NULL, NULL);
             queue.finish();
         }
         else if (enCombine == 1 && enBinarise == 0)
@@ -370,7 +338,7 @@ int main(int argc, char *argv[])
             combineKernel.setArg(3, width);
             combineKernel.setArg(4, height);
             
-            queue.enqueueNDRangeKernel(combineKernel, cl::NullRange, cl::NDRange(width, height));
+            queue.enqueueNDRangeKernel(combineKernel, cl::NullRange, cl::NDRange(width, height),cl::NullRange, NULL, NULL);
             queue.finish();
         }
         
