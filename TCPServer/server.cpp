@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
     //int displayFrame = 0;
     int filterType = 3; //0 = none, 1 = 3x3mean, 2 = 3x3 median, 3 = 5x5 median, 4 = 3x3median 2 pass
     int enSobelEdge = 1;
-    int enBinarise = 1;
-    int enCombine = 1;
+    int enBinarise = 0;
+    int enCombine = 0;
     int enCombineFiltering = 1;
     int width = WIDTH;
     int height = HEIGHT;
@@ -259,8 +259,6 @@ int main(int argc, char *argv[])
             medianKernel5.setArg(3, height);
             
             queue.enqueueNDRangeKernel(medianKernel5, cl::NullRange, cl::NDRange(width, height));
-            
-            //queue.enqueueReadBuffer(d_frame_out, CL_TRUE, 0, sizeof(uchar)*h_frame_out.size(), h_frame_out.data());
             queue.finish();
             //h_frame_in = h_frame_out;
         }
